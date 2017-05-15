@@ -1,0 +1,20 @@
+{
+  "session" : {
+    "aws_access_key_id" : "<your aws access key>",
+    "aws_secret_access_key" : "<your aws secret key>",
+    "region_name" : "<your prefered region>"
+  },
+  "instances" : [
+    {
+      "ImageId" : "ami-80861296",
+      "MinCount" : 1,
+      "MaxCount" : 1,
+      "KeyName" : "<your key pair>",
+      "SecurityGroups" : [
+        "<your security group>"
+      ],
+      "InstanceType" : "t2.micro"
+    }
+  ]
+}
+
