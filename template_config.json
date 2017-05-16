@@ -15,6 +15,9 @@
       ],
       "InstanceType" : "t2.micro"
     }
-  ]
+  ],
+  "ssh" : {
+    "key_path" : "<your path to .ssh dir>"
+  }
 }
 

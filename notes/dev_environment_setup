@@ -1,0 +1,4 @@
+sudo add-apt-repository -y ppa:webupd8team/java
+sudo apt-get update
+sudo apt-get -y install build-essential libssl-dev libffi-dev git python python-dev python-pip default-jdk oracle-java8-installer
+sudo pip install boto3 cryptography paramiko
