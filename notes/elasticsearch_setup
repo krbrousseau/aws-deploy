@@ -2,17 +2,17 @@
 sudo apt-get update
 sudo apt-get -y install elasticsearch
 sudo systemctl enable elasticsearch.service
-modify /etc/elasticsearch/elasticsearch.yml
 sudo sed -i 's/#START_DAEMON/START_DAEMON/' /etc/default/elasticsearch
 sudo systemctl restart elasticsearch
 
 # install nginx
 sudo apt-get -y install nginx
-sudo update-rc.d nginx defaults
 
 # set up auth
 sudo apt-get -y install apache2-utils
-sudo htpasswd -c -b /etc/nginx/.htpasswd exampleuser examplepassword
+sudo nginx -p /home/ubuntu/ -c nginx-elasticsearch-proxy.conf
+sudo systemctl restart nginx
 
-# modify nginx config
+# create user
+sudo htpasswd -c -b /etc/nginx/.htpasswd exampleuser examplepassword
 

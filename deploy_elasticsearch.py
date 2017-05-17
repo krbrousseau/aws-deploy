@@ -3,7 +3,7 @@ import boto3
 import time
 import paramiko
 
-config = json.load(open('config.json','r'))
+config = json.load(open('configs/config.json','r'))
 
 session = boto3.session.Session(
   aws_access_key_id=config['session']['aws_access_key_id'],
@@ -27,6 +27,7 @@ for instance in config['instances']:
   print instances
   deployed_instances.append(instances)
 
+time.sleep(30)
 print "continuing setup"
 for instances in deployed_instances:
   for instance in instances:
@@ -48,33 +49,48 @@ for instances in deployed_instances:
     #print "ubuntu@"+str(hostname)+" "+str(key_path)
     ssh_client = paramiko.SSHClient()
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    print "connecting to "+hostname
+    print "connecting to "+instance.instance_id+" at "+hostname
     ssh_client.connect(hostname, username="ubuntu", key_filename=key_path)
     ftp_client = ssh_client.open_sftp()
     # push script file
     setup_script = config['ftp']['setup_script']
-    localpath = config['ftp']['script_path']+setup_script
-    remotepath = "/home/ubuntu/"+setup_script
+    nginx_config = config['ftp']['nginx_config']
+    setup_script_path = config['ftp']['script_path']+setup_script
+    nginx_config_path = config['ftp']['config_path']+nginx_config
     print "uploading "+setup_script
-    ftp_client.put(localpath, remotepath)
+    ftp_client.put(setup_script_path, "/home/ubuntu/"+setup_script)
+    time.sleep(15)
+    print "uploading "+nginx_config
+    ftp_client.put(nginx_config_path, "/home/ubuntu/"+nginx_config)
     ftp_client.close()
+    time.sleep(15)
     print "executing "+setup_script
     stdin, stdout, stderr = ssh_client.exec_command('chmod +x '+setup_script+'; ./'+setup_script)
-    time.sleep(5)
-    sout = stdout.readlines()
-    print sout
-    serr = stderr.readlines()
-    print serr
-    while len(sout)>0:
+    script_output = ""
+    script_errors = ""
+    print "waiting for script"
+    stdout_buffer = stdout.readlines()
+    stderr_buffer = stderr.readlines()
+    while len(stdout_buffer)>0 and len(stderr_buffer)>0:
       print "waiting for script"
-      time.sleep(5)
-      sout = stdout.readlines()
-      print sout
-      serr = stderr.readlines()
-      print serr
+      script_output+="".join(stdout_buffer)
+      script_errors+="".join(stderr_buffer)
+      stdout_buffer = stdout.readlines()
+      stderr_buffer = stderr.readlines()
+    print script_output
+    print script_errors
     stdin, stdout, stderr = ssh_client.exec_command("ps ax -o command | grep -c '^/usr/bin/java.*Elasticsearch'")
     if int(stdout.readlines()[0])==1:
-      print "Elasticsearch running"
+      print "elasticsearch running"
     else:
-      print "setup failed; exiting"
+      print "elasticsearch setup failed; exiting"
+      ssh_client.close()
+      exit()
+    stdin, stdout, stderr = ssh_client.exec_command("ps ax -o command | grep -c '^nginx'")
+    if int(stdout.readlines()[0])>=1:
+      print "nginx running"
+    else:
+      print "nginx setup failed; exiting"
+      ssh_client.close()
+      exit()
     ssh_client.close()
