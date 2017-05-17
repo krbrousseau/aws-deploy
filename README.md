@@ -1,4 +1,4 @@
-# aws-elasticsearch-deploy
+## aws-elasticsearch-deploy
 Deploys an AWS instance and configures Elasticsearch
 
 # Goal
@@ -6,7 +6,6 @@ Deploy an AWS instance.
 Install, configure, and secure Elasticsearch.
 
 # Requirements
-Local environment with : 
 ```
 python v2.7.x
  - boto3
@@ -14,22 +13,18 @@ python v2.7.x
  - paramiko
 ```
 
-A base AWS ami with :
-```
-oracle java8
-```
-
 # Setup
-Copy the existing config template as `config.json` and modify it to include the necessary AWS keys and settings for the instance being deployed.
+Copy `configs/template_config.json` as `configs/config.json` and modify it to include the necessary AWS keys and settings for the instance being deployed, the path to your `.ssh` directory, the paths to this repo's `scripts` and `configs` directories, and user/password information for the server.
 
 # Deploying the Instance
-With the config file set up, just run : 
+With the config file set up run : 
 ```
 $ python deploy.py
 ```
 The instance will be deployed to AWS based on the settings specified in `config.json`. 
-A setup script and multiple config files are uploaded to the instance.
+A setup script and multiple config files will be uploaded to the instance.
 The setup script is executed to install and configure elasticsearch.
+On success, the final line output will have the IP address of the instance.
 
 # Resources
  - lots of Googling
@@ -38,3 +33,6 @@ The setup script is executed to install and configure elasticsearch.
  - NGINX docs
  - stackoverflow
  - DigitalOcean Tutorials
+
+# Questions
+Answers found [here](questions.md)

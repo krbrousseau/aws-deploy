@@ -100,3 +100,4 @@ for instances in deployed_instances:
       ssh_client.close()
       exit()
     ssh_client.close()
+    print "elasticsearch available at "+hostname
