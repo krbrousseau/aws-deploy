@@ -27,7 +27,7 @@ for instance in config['instances']:
   print instances
   deployed_instances.append(instances)
 
-time.sleep(30)
+time.sleep(90)
 print "continuing setup"
 for instances in deployed_instances:
   for instance in instances:
@@ -38,7 +38,7 @@ for instances in deployed_instances:
       print "waiting for instance"
       i = 0
       while (hostname == None or key_name == None) and i<=3:
-	time.sleep(30)
+	time.sleep(60)
 	i += 1
 	instance = ec2.Instance(instance.instance_id)
 	hostname = instance.public_ip_address
@@ -54,16 +54,18 @@ for instances in deployed_instances:
     ftp_client = ssh_client.open_sftp()
     # push script file
     setup_script = config['ftp']['setup_script']
-    nginx_config = config['ftp']['nginx_config']
     setup_script_path = config['ftp']['script_path']+setup_script
-    nginx_config_path = config['ftp']['config_path']+nginx_config
+    config_path = config['ftp']['config_path']
     print "uploading "+setup_script
     ftp_client.put(setup_script_path, "/home/ubuntu/"+setup_script)
-    time.sleep(15)
-    print "uploading "+nginx_config
-    ftp_client.put(nginx_config_path, "/home/ubuntu/"+nginx_config)
+    time.sleep(5)
+    for config_upload in config['ftp']['configs']:
+      print "uploading "+config_upload
+      ftp_client.put(config_path+config_upload, "/home/ubuntu/"+config_upload)
+      time.sleep(5)
     ftp_client.close()
-    time.sleep(15)
+    print "waiting for instance"
+    time.sleep(60)
     print "executing "+setup_script
     stdin, stdout, stderr = ssh_client.exec_command('chmod +x '+setup_script+'; ./'+setup_script)
     script_output = ""
@@ -79,6 +81,10 @@ for instances in deployed_instances:
       stderr_buffer = stderr.readlines()
     print script_output
     print script_errors
+    for user in config['user_auth']:
+      username = user['username']
+      password = user['password']
+      stdin, stdout, stderr = ssh_client.exec_command("sudo htpasswd -c -b /etc/nginx/.htpasswd "+username+" "+password)
     stdin, stdout, stderr = ssh_client.exec_command("ps ax -o command | grep -c '^/usr/bin/java.*Elasticsearch'")
     if int(stdout.readlines()[0])==1:
       print "elasticsearch running"

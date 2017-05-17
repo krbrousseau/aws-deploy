@@ -1,23 +1,40 @@
 {
   "session" : {
-    "aws_access_key_id" : "<your aws access key>",
-    "aws_secret_access_key" : "<your aws secret key>",
-    "region_name" : "<your prefered region>"
+    "aws_access_key_id" : "<aws access key>",
+    "aws_secret_access_key" : "<aws secret key>",
+    "region_name" : "<prefered region>"
   },
   "instances" : [
     {
-      "ImageId" : "ami-80861296",
+      "ImageId" : "<base ami>",
       "MinCount" : 1,
       "MaxCount" : 1,
-      "KeyName" : "<your key pair>",
+      "KeyName" : "<key pair>",
       "SecurityGroups" : [
-        "<your security group>"
+        "<security group>"
       ],
       "InstanceType" : "t2.micro"
     }
   ],
   "ssh" : {
-    "key_path" : "<your path to .ssh dir>"
-  }
+    "key_path" : "<path to .ssh dir>"
+  },
+  "ftp" : {
+    "config_path" : "<path to repo>/aws-elasticsearch-deploy/configs/",
+    "configs" : [
+      "nginx-elasticsearch-proxy.conf",
+      "openssl-prompt.conf",
+      "self-signed.conf",
+      "ssl-params.conf"
+    ],
+    "script_path" : "<path to repo>/aws-elasticsearch-deploy/scripts/",
+    "setup_script" : "elasticsearch_setup.sh"
+  },
+  "user_auth" : [
+    {
+      "username" : "<your user>",
+      "password" : "<your password>"
+    }
+  ]
 }
 
