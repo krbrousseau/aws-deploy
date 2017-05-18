@@ -56,7 +56,6 @@ You should receive a response similar to the following :
 }
 
 ```
-
 ## Resources
  - lots of Googling
  - Boto 3 Docs
