@@ -34,5 +34,6 @@ On success, the final line output will have the IP address of the instance.
  - stackoverflow
  - DigitalOcean Tutorials
 
-# Questions
-Answers found [here](questions.md)
+# Feedback and Questions
+Feedback can be found [here](feedback.md).
+Questions can be found [here](questions.md).
