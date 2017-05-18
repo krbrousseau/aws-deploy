@@ -1,3 +1,9 @@
+# Reasoning
+
+# Feedback
+
+I started this project on 5/15, and it took me roughly three full days to have a deployment solution that successfully deploys and secures a single ElasticSearch node.
+
 # Questions
 
 How did you choose to automate the provisioning and bootstrapping of the instance? Why?
