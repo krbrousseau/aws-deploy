@@ -79,7 +79,7 @@ def create_instance_ssh_connection(instance):
   ssh_client.connect(hostname, username="ubuntu", key_filename=key_path)
   return ssh_client
 
-def upload_files(ssh_client, role_config, role):
+def upload_files(ssh_client, role_config):
   ftp_client = ssh_client.open_sftp()
 
   # push config files
