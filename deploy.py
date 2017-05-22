@@ -27,9 +27,9 @@ def load_role_config(role):
 
 def launch_instances(role):
   role_config = load_role_config(role)
-  print role_config
+  #print role_config
   
-  print "launching instances"
+  print "launching "+role+" instances"
   launched_instances = ec2.create_instances(
     ImageId=role_config['instance']['ImageId'],
     MinCount=role_config['instance']['MinCount'],
@@ -113,9 +113,9 @@ def bootstrap_instance(instance, role, added_roles=[]):
     script_errors+="".join(stderr_buffer)
     stdout_buffer = stdout.readlines()
     stderr_buffer = stderr.readlines()
-  print script_output
+  #print script_output
   stdout_file.write(script_output.encode('utf-8'))
-  print script_errors
+  #print script_errors
   stderr_file.write(script_errors.encode('utf-8'))
 
   # set up users
@@ -154,6 +154,7 @@ def deploy():
     for instance in instances:
       instance = ec2.Instance(instance.instance_id)
       bootstrap_instance(instance,role)
+      print "\n"+role+" instance available at "+instance.public_ip_address+"\n"
   print "deploy complete"
 
 deploy()
