@@ -41,6 +41,15 @@ def launch_instances(role):
   )
   return launched_instances
 
+def add_inherited_security_groups(instance, role_config):
+  security_groups = [sg['GroupName'] for sg in instance.security_groups]
+  inherited_security_groups = role_config['instance']['SecurityGroups']
+  for inherited_sg in inherited_security_groups:
+    if inherited_sg not in security_groups:
+      security_groups.append(inherited_sg)
+  security_group_ids = [sg.id for sg in ec2.security_groups.filter(GroupNames=security_groups)]
+  instance.modify_attribute(Groups=security_group_ids)
+
 def get_instance_ssh_info(instance):
   instance = ec2.Instance(instance.instance_id)
   hostname = instance.public_ip_address
@@ -58,24 +67,7 @@ def get_instance_ssh_info(instance):
       exit()
   return hostname, key_name
   
-def bootstrap_instance(instance, role, added_roles=[]):
-  role_config = load_role_config(role)
-  for requirement in role_config['requirements']:
-    if requirement not in added_roles:
-      added_roles += bootstrap_instance(instance, requirement, added_roles+role_config['requirements'])
-      #added_roles += bootstrap_instance(instance, requirement, added_roles+[requirement])
-  print "bootstrapping "+role
-
-  # add inherited security groups
-  security_groups = [sg['GroupName'] for sg in instance.security_groups]
-  inherited_security_groups = role_config['instance']['SecurityGroups']
-  for inherited_sg in inherited_security_groups:
-    if inherited_sg not in security_groups:
-      security_groups.append(inherited_sg)
-  security_group_ids = [sg.id for sg in ec2.security_groups.filter(GroupNames=security_groups)]
-  instance.modify_attribute(Groups=security_group_ids)
-
-  # open ssh/ftp connections
+def create_instance_ssh_connection(instance):
   hostname = instance.public_ip_address
   key_name = instance.key_name
   if hostname == None or key_name == None:
@@ -85,6 +77,9 @@ def bootstrap_instance(instance, role, added_roles=[]):
   ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
   print "connecting to "+instance.instance_id+" at "+hostname
   ssh_client.connect(hostname, username="ubuntu", key_filename=key_path)
+  return ssh_client
+
+def upload_files(ssh_client, role_config, role):
   ftp_client = ssh_client.open_sftp()
 
   # push config files
@@ -93,17 +88,15 @@ def bootstrap_instance(instance, role, added_roles=[]):
     ftp_client.put(roles_location+role+"/"+config_upload, "/home/ubuntu/"+config_upload)
 
   # push setup script
-  setup_script_path = roles_location+role+"/setup.sh" 
+  setup_script_path = roles_location+role_config['role']+"/setup.sh" 
   print "uploading setup.sh"
   ftp_client.put(setup_script_path, "/home/ubuntu/setup.sh")
   ftp_client.close()
 
-  # execute setup script and collect output
+def execute_setup_script(instance, ssh_client, role, stdout_file, stderr_file):
   print "executing setup.sh"
   if not os.path.exists("logs"):
     os.makedirs("logs")
-  stdout_file = open("logs/"+instance.instance_id+"_"+role+"_setup.out",'w')
-  stderr_file = open("logs/"+instance.instance_id+"_"+role+"_setup.err",'w')
   stdin, stdout, stderr = ssh_client.exec_command('chmod +x setup.sh; ./setup.sh')
   script_output = ""
   script_errors = ""
@@ -121,7 +114,7 @@ def bootstrap_instance(instance, role, added_roles=[]):
   #print script_errors
   stderr_file.write(script_errors.encode('utf-8'))
 
-  # set up users
+def configure_user_auth(ssh_client, role_config, stdout_file, stderr_file):
   for user in role_config['user_auth']:
     username = user['username']
     password = user['password']
@@ -129,6 +122,32 @@ def bootstrap_instance(instance, role, added_roles=[]):
     stdout_file.write("".join(stdout.readlines()).encode('utf-8'))
     stderr_file.write("".join(stderr.readlines()).encode('utf-8'))
 
+def bootstrap_instance(instance, role, added_roles=[]):
+  role_config = load_role_config(role)
+  for requirement in role_config['requirements']:
+    if requirement not in added_roles:
+      added_roles += bootstrap_instance(instance, requirement, added_roles+role_config['requirements'])
+      #added_roles += bootstrap_instance(instance, requirement, added_roles+[requirement])
+  print "bootstrapping "+role
+
+  # add inherited security groups
+  add_inherited_security_groups(instance, role_config)
+
+  # open ssh/ftp connections
+  ssh_client = create_instance_ssh_connection(instance)
+
+  # upload setup and config files
+  upload_files(ssh_client, role_config)
+
+  # execute setup script and collect output
+  stdout_file = open("logs/"+instance.instance_id+"_"+role+"_setup.out",'w')
+  stderr_file = open("logs/"+instance.instance_id+"_"+role+"_setup.err",'w')
+  execute_setup_script(instance, ssh_client, role, stdout_file, stderr_file)
+
+  # set up users if any
+  configure_user_auth(ssh_client, role_config, stdout_file, stderr_file)
+
+  # close open files and ssh client
   stdout_file.close()
   stderr_file.close()
   ssh_client.close()
