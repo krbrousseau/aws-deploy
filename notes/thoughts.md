@@ -1,16 +1,20 @@
 Previous version thoughts can be found [here](thoughts-v0.1.md)
 
-## Reasoning [v0.1](thoughts-v0.1.md#reasoning)
+## Reasoning 
+([previous version](thoughts-v0.1.md#reasoning))
+
 I went back and refactored the config structure to make the code more extensible.
 I pulled the role specific configs into their own separate configs, and left the primary config information in the main directory.
 This would allow me to have multiple configs for different roles, and allow the deploy of different roles using a generic deploy script.
 This also allowed me to incorporate role requirements, which allowed me to create role dependencies that can be used across different services (nginx for example).
 What I have now is a little closer to the functionality that Chef provides with it's cookbooks and recipes.
 
-## Feedback [v0.1](thoughts-v0.1.md#feedback)
-Nothing new to add here, see previous version.
+## Feedback
+Nothing new here, see [previous version](thoughts-v0.1.md#feedback).
 
-## Questions [v0.1](thoughts-v0.1.md#questions)
+## Questions 
+([previous version](thoughts-v0.1.md#questions))
+
 ### How did you choose to automate the provisioning and bootstrapping of the instance? Why?
 Provisioning and Bootstrapping method is mostly unchanged. The Boto3 package handles the launch of the instance, and bash scripts handle the bootstrapping. The recursive bootstrapping behavior for role dependencies is new, but provides the same function.
 ### How did you choose to secure ElasticSearch? Why?
