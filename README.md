@@ -1,12 +1,12 @@
 # aws-deploy
-Deploys an AWS instance using Python's Boto3 package, and configures the instance for the specified role.
+Deploys an AWS instance and configures the instance for the specified role.
 
 ## Goal
 Deploy an AWS instance. 
 Install, configure, and secure ElasticSearch.
 
 ## Run Requirements
-* AWS account with valid AWS access keys and key pair
+* AWS account with valid AWS access keys, ssh key pair, and security groups.
 * Python 2.7.x with `boto3`, `cryptography`, and `paramiko` packages.
 
 ## Setup
@@ -26,7 +26,7 @@ You will need the following security groups configured in AWS with these names :
 "elasticsearch"  inbound ports 9200/9300/9400 open to the "elasticsearch" security group
 ```
 
-## Deploying the Instance
+## Deploying
 With the config file set up and your security groups created : 
 ```
 $ python deploy.py <role>

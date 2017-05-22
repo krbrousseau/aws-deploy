@@ -1,4 +1,5 @@
 import sys
+import os
 import time
 import json
 import boto3
@@ -99,6 +100,8 @@ def bootstrap_instance(instance, role, added_roles=[]):
 
   # execute setup script and collect output
   print "executing setup.sh"
+  if not os.path.exists("logs"):
+    os.makedirs("logs")
   stdout_file = open("logs/"+instance.instance_id+"_"+role+"_setup.out",'w')
   stderr_file = open("logs/"+instance.instance_id+"_"+role+"_setup.err",'w')
   stdin, stdout, stderr = ssh_client.exec_command('chmod +x setup.sh; ./setup.sh')
