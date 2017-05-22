@@ -1,9 +1,4 @@
 #!/bin/bash
-echo INSTALLING NGINX
-sudo apt-get -y install nginx
-[ $(systemctl status nginx | grep -c "active (running)") -le 0 ] && exit 1
-echo NGINX RUNNING
-
 echo INSTALLING ORACLE JAVA 8
 sudo add-apt-repository -y ppa:webupd8team/java
 sudo apt-get update

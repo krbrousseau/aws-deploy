@@ -1,0 +1,19 @@
+{
+  "role" : "krb-core",
+  "requirements" : [
+  ],
+  "instance" : {
+    "ImageId" : "ami-80861296",
+    "MinCount" : 1,
+    "MaxCount" : 1,
+    "KeyName" : "krb-ec2",
+    "SecurityGroups" : [
+      "ssh"
+    ],
+    "InstanceType" : "t2.micro"
+  },
+  "configs" : [
+  ],
+  "user_auth" : [
+  ]
+}

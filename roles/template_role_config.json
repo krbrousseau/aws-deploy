@@ -1,0 +1,23 @@
+{
+  "role" : "template",
+  "requirements" : [
+  ],
+  "instance" : {
+    "ImageId" : "ami-80861296",
+    "MinCount" : 1,
+    "MaxCount" : 1,
+    "KeyName" : "your-aws-key-pair",
+    "SecurityGroups" : [
+      "your-security-groups"
+    ],
+    "InstanceType" : "t2.micro"
+  },
+  "configs" : [
+  ],
+  "user_auth" : [
+    {
+      "username" : "guest",
+      "password" : "guest"
+    }
+  ]
+}
