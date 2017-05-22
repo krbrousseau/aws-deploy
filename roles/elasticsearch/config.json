@@ -1,0 +1,29 @@
+{
+  "role" : "elasticsearch",
+  "requirements" : [
+    "krb-core",
+    "nginx"
+  ],
+  "instance" : {
+    "ImageId" : "ami-80861296",
+    "MinCount" : 1,
+    "MaxCount" : 1,
+    "KeyName" : "krb-ec2",
+    "SecurityGroups" : [
+      "elasticsearch"
+    ],
+    "InstanceType" : "t2.micro"
+  },
+  "configs" : [
+    "nginx-elasticsearch-proxy.conf",
+    "openssl-prompt.conf",
+    "self-signed.conf",
+    "ssl-params.conf"
+  ],
+  "user_auth" : [
+    {
+      "username" : "guest",
+      "password" : "guest"
+    }
+  ]
+}

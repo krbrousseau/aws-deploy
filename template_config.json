@@ -1,0 +1,9 @@
+{
+  "session" : {
+    "aws_access_key_id" : "YOURAWSACCESSKEY",
+    "aws_secret_access_key" : "YOURAWSSECRETACCESSKEY",
+    "region_name" : "your-aws-region"
+  },
+  "ssh_key_path" : "/path/to/.ssh/",
+  "roles_location" : "/path/to/aws-deploy/roles/"
+}
