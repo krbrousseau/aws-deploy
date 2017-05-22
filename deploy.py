@@ -85,7 +85,7 @@ def upload_files(ssh_client, role_config):
   # push config files
   for config_upload in role_config['configs']:
     print "uploading "+config_upload
-    ftp_client.put(roles_location+role+"/"+config_upload, "/home/ubuntu/"+config_upload)
+    ftp_client.put(roles_location+role_config['role']+"/"+config_upload, "/home/ubuntu/"+config_upload)
 
   # push setup script
   setup_script_path = roles_location+role_config['role']+"/setup.sh" 
@@ -93,7 +93,7 @@ def upload_files(ssh_client, role_config):
   ftp_client.put(setup_script_path, "/home/ubuntu/setup.sh")
   ftp_client.close()
 
-def execute_setup_script(instance, ssh_client, role, stdout_file, stderr_file):
+def execute_setup_script(instance, ssh_client, stdout_file, stderr_file):
   print "executing setup.sh"
   if not os.path.exists("logs"):
     os.makedirs("logs")
@@ -142,7 +142,7 @@ def bootstrap_instance(instance, role, added_roles=[]):
   # execute setup script and collect output
   stdout_file = open("logs/"+instance.instance_id+"_"+role+"_setup.out",'w')
   stderr_file = open("logs/"+instance.instance_id+"_"+role+"_setup.err",'w')
-  execute_setup_script(instance, ssh_client, role, stdout_file, stderr_file)
+  execute_setup_script(instance, ssh_client, stdout_file, stderr_file)
 
   # set up users if any
   configure_user_auth(ssh_client, role_config, stdout_file, stderr_file)
