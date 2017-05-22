@@ -33,7 +33,8 @@ $ python deploy.py <role>
 ```
 The instance will be deployed to AWS based on the role specified. 
 A setup script and multiple config files will be uploaded to the instance.
-The setup script is executed to install and configure ElasticSearch.
+The `elasticsearch` role is configured to install and secure ElasticSearch.
+On success, the final output will have the IP address of the instance.
 To test that ElasticSearch is running, navigate in your web browser to the IP of the instance or run :
 ```
 curl -k -u <user>:<password> -X GET 'https://<IP of the instance>'
