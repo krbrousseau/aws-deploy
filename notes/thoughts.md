@@ -28,4 +28,4 @@ See previous version.
 ### Was it a priority to make your code well structured, extensible, and reusable?
 Going back through my code allowed me to break up the giant script into functions and reformat the config structure. This makes it much easier to add new roles in the future, and the main script is a little easier to follow.
 ### What sacrifices did you make due to time?
-I'm still a little light on comments, but the code is better structured after my second iteration.
+I'm still a little light on comments, but the code is better structured after my second iteration. Unfortunately I did not include any error handling or argument/config checking.
