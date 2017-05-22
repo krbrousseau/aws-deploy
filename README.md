@@ -1,40 +1,40 @@
 # aws-deploy
-Deploys an AWS instance using the Boto3 package for Python.
-Configs are setup for installing and configuring ElasticSearch.
+Deploys an AWS instance and configures the instance for the specified role.
 
 ## Goal
 Deploy an AWS instance. 
 Install, configure, and secure ElasticSearch.
 
 ## Run Requirements
-* AWS account with valid AWS access keys and key pair
+* AWS account with valid AWS access keys, ssh key pair, and security groups.
 * Python 2.7.x with `boto3`, `cryptography`, and `paramiko` packages.
 
 ## Setup
-Copy `configs/template_config.json` as `configs/config.json` and modify the following entries : 
+Copy `template_config.json` as `config.json` and modify the following entries : 
 ```
 session.aws_access_key_id      // your access key
 session.aws_secret_access_key  // your secret key
 session.region_name            // your aws region
-instance.KeyName               // your aws_key_pair.pem
-instance.SecurityGroups        // add your list of security groups
-ssh.key_path                   // /path/to/.ssh/
-ftp.config_path                // /path/to/aws-deploy/configs/
-ftp.script_path                // /path/to/aws-deploy/scripts/
-user_auth._.username           // add your list of
-user_auth._.password           //   users:passwords
+ssh_key_path                   // /path/to/.ssh/
+roles_location                 // /path/to/aws-deploy/roles
 ```
-You will need security groups that open up ports `ssh 22`, `http 80`, and `https 443`, along with a security group that allows inbound traffic on ports `9200` and `9300` from itself (the security group id).
+You will need the following security groups configured in AWS with these names : 
+```
+"ssh"            inbound port 22 open to all
+"http"           inbound port 80 open to all
+"https"          inbound port 443 open to all
+"elasticsearch"  inbound ports 9200/9300/9400 open to the "elasticsearch" security group
+```
 
-## Deploying the Instance
+## Deploying
 With the config file set up and your security groups created : 
 ```
-$ python deploy.py
+$ python deploy.py <role>
 ```
-The instance will be deployed to AWS based on the settings specified in `config.json`. 
+The instance will be deployed to AWS based on the role specified. 
 A setup script and multiple config files will be uploaded to the instance.
-The setup script is executed to install and configure ElasticSearch.
-On success, the final line output will have the IP address of the instance.
+The `elasticsearch` role is configured to install and secure ElasticSearch.
+On success, the final output will have the IP address of the instance.
 To test that ElasticSearch is running, navigate in your web browser to the IP of the instance or run :
 ```
 curl -k -u <user>:<password> -X GET 'https://<IP of the instance>'
